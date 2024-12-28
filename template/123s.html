@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            
+            margin: 0;
+            padding: 0;
+            background-color: #24252A;
+            color: #edf0f1;
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        #chat-messages, #chat-history {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            background-color: #ffffff;
+            color: #24252A;
+        }
+        #chat-messages p, #chat-history p {
+            margin: 5px 0;
+        }
+        label, button {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            color: #edf0f1;
+            text-decoration: none;
+            background-color: #24252A;
+        }
+        input[type="text"], input[type="password"], textarea {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+            color: #24252A;
+        }
+        button[type="submit"] {
+            padding: 9px 25px;
+            background-color: rgba(0, 136, 169, 1);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease 0.3s;
+            color: #edf0f1;
+        }
+        button[type="submit"]:hover {
+            background-color: rgba(0, 135, 169, 0.71);
+        }
+        .main{
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>VeriNews</h1>
+
+    {% if username %}
+    <h3>Welcome, {{ username }}!</h3>
+    {% else %}
+    <h3>Welcome !</h3>
+    {% endif %}
+<div class="main">
+    <form method="post" action="{% url 'welcome' %}">
+        {% csrf_token %}
+        <label for="msg">Your message:</label><br>
+        <textarea cols="140" rows="1" id="msg" name="msg" required></textarea><br><br>
+        <button type="submit">Send</button>
+    </form>
+   
+    <h2>Chat Field</h2>
+    <div id="chat-messages">
+        <!-- Display response history -->
+        {% if username %}
+        <div class="chat-container">
+            {% for message in formatted_list %}
+                {% if message.role == 'user' %}
+                    <div class="message user-message">
+                       <strong>You:</strong> <p>{{ message.content }}</p>
+                    </div>
+                {% elif message.role == 'assistant' %}
+                    <div class="message assistant-message">
+                        <strong>Assistant:</strong><p>{{ message.content | safe  }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    
+
+
+ <!-- Bootstrap Modal -->
+ <div class="modal fade" id="readMoreModal" tabindex="-1" role="dialog" aria-labelledby="readMoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="readMoreModalLabel">Read More</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{{ news_info }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <!-- Bootstrap JS -->
+ <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
+    
+    <script>
+        // Scroll to the bottom of the chat-messages div
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var chatMessagesDiv = document.getElementById('chat-messages');
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        });
+
+        $(document).ready(function() {
+            $('#readMoreButton').click(function() {
+                $('#readMoreModal').modal('show'); // Show the modal when "Read more" button is clicked
+            });
+
+            // Redirect to the chat interface when the modal is closed
+            $('#closeModalButton').click(function() {
+                window.location.href = "{% url 'welcome' %}"; // Redirect to the welcome page
+            });
+        });
+    </script>
+   
+</body>
+</html>
